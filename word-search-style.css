@@ -1,0 +1,52 @@
+li{
+    
+    list-style-type:none;
+    text-align: center;
+}
+
+.rows{
+    display: grid;
+    grid-template-columns:30px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px ;
+    text-align: center;
+    
+}
+
+#words-list{
+    display: grid;
+    grid-template-columns: 100px 100px 100px;
+    position: absolute;
+    text-align: center;
+    margin-top: 120%;
+}
+
+#puzzle{
+    text-align: center;
+    position: absolute;
+    margin-left: 30%;
+    margin-right: 25%;
+    margin-top: 7%;
+}
+    
+    
+
+#title{
+   position: absolute;
+    
+    margin-left: 50%;
+    margin-top: 3%;
+}
+    
+
+
+body{
+    position: relative;
+    
+}
+
+.found{
+    text-decoration: line-through;
+}
+
+.tile-found{
+    background-color: aqua;
+}
