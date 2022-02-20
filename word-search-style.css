@@ -2,6 +2,7 @@ li{
     
     list-style-type:none;
     text-align: center;
+    color: white;
 }
 
 .rows{
@@ -13,7 +14,7 @@ li{
 
 #words-list{
     display: grid;
-    grid-template-columns: 100px 100px 100px;
+    grid-template-columns: 130px 130px 130px;
     position: absolute;
     text-align: center;
     margin-top: 120%;
@@ -34,19 +35,27 @@ li{
     
     margin-left: 50%;
     margin-top: 3%;
+    color: white;
+    text-align: center;
 }
     
 
 
 body{
     position: relative;
-    
+    background-color: black;
+    font-family: 'Roboto', sans-serif;
 }
 
 .found{
     text-decoration: line-through;
+    color: rgb(136, 136, 136);
 }
 
 .tile-found{
-    background-color: aqua;
+    background-color: rgb(255, 0, 212);
+}
+
+.tile:hover{
+    background-color: rgb(65, 63, 63);
 }

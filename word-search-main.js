@@ -3,7 +3,7 @@
 //import {Puzzle} from "/puzzle.js";
 
 class Word{
-    word;
+    word = "";
     isFound;
     firstLetter;
     word_element;
@@ -79,6 +79,11 @@ class Tile{
     setIsSelected(isSelected)
     {
         this.isSelected = isSelected;
+
+        if(isSelected)
+            this.tile_element.setAttribute("background-color", "rgb(255, 255, 0");
+        else
+            this.tile_element.setAttribute("background-color", "rgb(0, 0, 0");
     }
 
     setIsFound(isFound)
@@ -159,8 +164,9 @@ class Puzzle{
         this.puzzle = file;
         this.words = words;
 
-        this.dimension_x = file[0].length;
-        this.dimension_y = file.length;
+        this.dimension_x = puzzle[0].length;
+        
+        this.dimension_y = puzzle.length;
 
         this.setTileNeighbors();
 
@@ -169,6 +175,8 @@ class Puzzle{
 
     setTileNeighbors()
     {
+
+        //absolve conditions into variables
         for (let i = 0; i < this.dimension_y; i++)
         {
             for (let j = 0; j < this.dimension_x; j++)
@@ -237,76 +245,87 @@ class Puzzle{
         return this.isCompleted;
     }
 
+    search(word, index, tile, wordIndex)
+    {
+       tile.setIsSelected(true);    
+       
+       
+        if(wordIndex != word.length - 1)
+        {
+            if (tile.getNeighbors()[index] == null)
+            {
+                return false;
+            }
+            
+            console.log(typeof tile);
+            if (word.slice(wordIndex + 1, wordIndex  + 2) != tile.getNeighbors()[index].getLetter()
+            )
+            {
+                tile.setIsSelected(false);
+                return false;
+            }
+            else
+            {
+                return this.search(word, index, tile.getNeighbors()[index], wordIndex + 1);
+            }
+                
+        }
+        return true;
+    }
+
+    findWord(word)
+    {
+        for(let i = 0; i < this.dimension_y; i++)
+        {
+            for(let j = 0; j < this.dimension_x; j++)
+            {
+                if(word.getFirstLetter() === this.puzzle[i][j].getLetter())
+                {
+                    for (let index = 0; index < this.puzzle[i][j].getNeighbors().length; index++)
+                    {
+                        if (this.search(word.getWord(), index, this.puzzle[i][j], 0))
+                        {
+                            let tile = this.puzzle[i][j];
+                            
+                            for (let currIndex = 0; currIndex < word.getWord().length; currIndex++)
+                            {
+                                tile.setIsFound(true);
+                                tile = tile.getNeighbors()[index];
+                            }
+
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     solve()
     {
         //basic algorithm
-
         for (let i = 0; i < this.words.length; i++)
         {
-            var word = this.words[i].getWord();
-            findWord(word);
-            console.log(typeof word);
-            words[i].setIsCompleted(true);
-            
+            console.log(typeof words[i]);
+            console.log(words[i]);
+            this.findWord(this.words[i]);
+            this.words[i].setIsFound(true);
         }
 
         this.isCompleted = true;
     }
 
-    findWord(word)
-    {
-        for (let i = 0; i < this.dimension_y; i++)
-        {
-            for (let j = 0; j < this.dimension_x; j++)
-            {
-                if(word.substring(0, 1) === this.puzzle[i][j].getLetter())
-                {
-                    for (let z = 0; z < 8; z++)
-                    {
-                        if (this.puzzle[i][j].getNeighbors()[z].getLetter() === word.substring(1, 2))
-                        {
-                            if (search(word, z, this.puzzle[i][j], 1))
-                            {
-
-                                let solution = [];
-                                let tile = this.puzzle[i][j];
-
-                                for (let v = 0; v < word.length; v++)
-                                {
-                                    solution[v] = tile;
-                                    tile.setIsFound(true);
-                                    tile = tile.getNeighbors()[z];
-                                }
-
-                                this.solutionMap.set(word, solution);
-                                break;
-                            }
-                        }
-                    }
-                }
-        }   } 
-    }
-
-    search(word, index, tile, wordIndex)
-    {
-        if(wordIndex != word.length - 1)
-        {
-            if (word.slice(wordIndex + 1, wordIndex  + 2) != tile.getNeighbors[index].getLetter()
-            )
-            {
-                return false;
-            }
-            else
-                return this.search(word, index, tile.getNeighbors[index], wordIndex + 1);
-        }
-
-        return true;
-    }
+   
     
 
 }
 
-const title = "JANUARY"
+//TODO: add round corners, change color scheme, use a drop shadow effect, create a color bank
+// have each word highlighted in a different color
+// figure out how to add sorting animations
+//figure out how to use files instead
+
+const title = "JANUARY";
 
 const words = ["BLIZZARD", "BOOTS", "CARNATION", "DREARY", "FIRST", "FLU", "FOG", "FURNANCE",
                 "GARNET", "HIBERNATE", "ICE", "JANUARY", "KING", "PARKA", "QUILT", "RESOLUTION",
@@ -318,9 +337,9 @@ const puzzle = [
                     ["I", "R", "T", "N", "R", "R", "Y", "H", "O", "I", "U", "R", "I"],
                     ["T", "N", "A", "H", "A", "A", "E", "A", "O", "I", "U", "K", "D"],
                     ["U", "A", "N", "R", "Z", "U", "T", "T", "C", "V", "S", "Q", "R"],
-                    ["L", "C", "R", "H", "Z", "N", "A", "E", "T", "E", "E", "V", "E"],
-                    ["O", "E", "E", "S", "I", "A", "E", "R", "T", "Y", "P", "L", "A"],
-                    ["S", "D", "B", "N", "L", "J", "A", "E", "U", "A", "Y", "I", "R"],
+                    ["L", "N", "R", "H", "Z", "N", "A", "E", "T", "E", "E", "V", "E"],
+                    ["O", "C", "E", "S", "I", "A", "E", "R", "T", "Y", "P", "L", "A"],
+                    ["S", "E", "B", "N", "L", "J", "A", "E", "U", "A", "Y", "I", "R"],
                     ["E", "S", "I", "O", "B", "T", "N", "L", "R", "H", "E", "B", "Y"],
                     ["R", "F", "H", "W", "G", "R", "F", "K", "T", "S", "R", "I", "F"],
                     ["E", "S", "O", "T", "A", "N", "A", "S", "K", "A", "T", "E", "D"],
@@ -333,8 +352,9 @@ const title_element = document.getElementById("title");
 const puzzle_element = document.getElementById("puzzle");
 const words_element = document.getElementById("words");
 const words_list_element = document.getElementById("words-list");
-let words_list = words;
+let words_list = [];
 let tiles_list = puzzle;
+colors = [];
 
 title_element.appendChild(document.createTextNode(title));
 
@@ -348,6 +368,7 @@ for (let i = 0; i < puzzle.length; i++)
     {
         let letter_tile = document.createElement("li");
         letter_tile.setAttribute("id", "${i}${j}");
+        letter_tile.setAttribute("class", "tile");
         letter_tile.appendChild(document.createTextNode(puzzle[i][j]));
         row.appendChild(letter_tile);
 
@@ -370,6 +391,17 @@ for (let i = 0; i < words.length; i++)
     words_list[i] = wordObj;
     console.log(typeof words[i])
 }
-
+console.log(typeof words_list[1])
 let puzz = new Puzzle(tiles_list, words_list);
-puzz.findWord(words[0]);
+//puzz.solve();
+
+//works: blizzard, boots, carnation, dreary, first, flu, fog, garnet, hibernate
+//does not work: furnance
+
+puzz.solve();
+
+
+
+
+
+            
