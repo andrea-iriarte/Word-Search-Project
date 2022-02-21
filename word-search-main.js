@@ -2,6 +2,8 @@
 //import {Word} from "/Word.js";
 //import {Puzzle} from "/puzzle.js";
 
+//let colorBank = ["#d28fff", "#8f98ff", "#8ff0ff", "#a2ff8f", "#ff8ff4"];
+let colorBank = ["#c2fcf2", "#c2ebfc", "#c2cefc",  "#cdc2fc", "#dfc2fc", "#fac2fc", "#fcc2ea"]
 class Word{
     word = "";
     isFound;
@@ -42,6 +44,7 @@ class Word{
         if (this.isFound)
         {
             this.word_element.setAttribute("class", "found");
+            
         }
     }
 
@@ -55,6 +58,9 @@ class Tile{
     isFound;
     neighbors;
     tile_element;
+    
+    //colorBank;
+    
 
     //a b c 
     //d e f
@@ -74,7 +80,11 @@ class Tile{
         this.tile_element = tile_element;
         this.isFound = false;
         this.neighbors = [null, null, null, null, null, null, null, null];
+        
+        //
     }
+
+    
 
     setIsSelected(isSelected)
     {
@@ -86,13 +96,15 @@ class Tile{
             this.tile_element.setAttribute("background-color", "rgb(0, 0, 0");
     }
 
-    setIsFound(isFound)
+    setIsFound(isFound, color)
     {
         this.isFound = isFound;
 
         if(this.isFound)
         {
-            this.tile_element.setAttribute("class", "tile-found");
+            //this.tile_element.setAttribute("class", "tile-found");
+
+            this.tile_element.style.backgroundColor = color;
         }
     }
 
@@ -160,17 +172,13 @@ class Puzzle{
         //in the puzzles array
         //store the words list in the words array
         //solutionMap = new Map();
-        
         this.puzzle = file;
         this.words = words;
-
+        
         this.dimension_x = puzzle[0].length;
-        
         this.dimension_y = puzzle.length;
-
-        this.setTileNeighbors();
-
         
+        this.setTileNeighbors();
     }
 
     setTileNeighbors()
@@ -249,8 +257,7 @@ class Puzzle{
     {
        tile.setIsSelected(true);    
        
-       
-        if(wordIndex != word.length - 1)
+       if(wordIndex != word.length - 1)
         {
             if (tile.getNeighbors()[index] == null)
             {
@@ -286,11 +293,13 @@ class Puzzle{
                         if (this.search(word.getWord(), index, this.puzzle[i][j], 0))
                         {
                             let tile = this.puzzle[i][j];
-                            
+                            let color = colorBank[Math.floor(Math.random() * colorBank.length)];
+                            console.log(color);
                             for (let currIndex = 0; currIndex < word.getWord().length; currIndex++)
                             {
-                                tile.setIsFound(true);
+                                tile.setIsFound(true, color);
                                 tile = tile.getNeighbors()[index];
+                                
                             }
 
                             return;
@@ -324,6 +333,7 @@ class Puzzle{
 // have each word highlighted in a different color
 // figure out how to add sorting animations
 //figure out how to use files instead
+//find solution to overlap issue (circle instead of highlight)
 
 const title = "JANUARY";
 
@@ -393,12 +403,9 @@ for (let i = 0; i < words.length; i++)
 }
 console.log(typeof words_list[1])
 let puzz = new Puzzle(tiles_list, words_list);
-//puzz.solve();
-
-//works: blizzard, boots, carnation, dreary, first, flu, fog, garnet, hibernate
-//does not work: furnance
-
 puzz.solve();
+console.log(Math.floor(Math.random() * 5));
+
 
 
 
