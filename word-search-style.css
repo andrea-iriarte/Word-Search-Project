@@ -28,8 +28,6 @@ li{
     margin-top: 10%;
 }
     
-    
-
 #title{
    position: absolute;
     
@@ -52,11 +50,9 @@ li{
     box-shadow: 12px 12px 2px 1px rgba(130, 102, 206, 0.466);
 }
     
-
-
 body{
     position: relative;
-    background-color: rgb(236, 232, 255);
+    background-color: rgb(255, 232, 253);
     font-family: 'Roboto', sans-serif;
 }
 

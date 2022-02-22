@@ -9,12 +9,14 @@ class Word{
     isFound;
     firstLetter;
     word_element;
+    color;
     
     constructor(word, word_element){
         this.word = word;
         this.word_element = word_element;
         this.firstLetter = word.slice(0, 1);
         this.isFound = false;
+        this.color = colorBank[Math.floor(Math.random() * colorBank.length)];
     }
 
     getIsFound()
@@ -36,6 +38,11 @@ class Word{
     {
         return this.word_element;
     }
+
+    getColor()
+    {
+        return this.color;
+    }
     
     setIsFound(isFound)
     {
@@ -52,16 +59,15 @@ class Word{
 
 class Tile{
     letter;
-    isSelected = false;
+    isSelected;
     i_index;
     j_index;
     isFound;
     neighbors;
     tile_element;
+    color;
+    word;
     
-    //colorBank;
-    
-
     //a b c 
     //d e f
     //j k l
@@ -80,32 +86,36 @@ class Tile{
         this.tile_element = tile_element;
         this.isFound = false;
         this.neighbors = [null, null, null, null, null, null, null, null];
-        
-        //
+        this.color = "";
+        this.isSelected = false;
+        this.word = "";
     }
-
-    
 
     setIsSelected(isSelected)
     {
         this.isSelected = isSelected;
-
-        if(isSelected)
-            this.tile_element.setAttribute("background-color", "rgb(255, 255, 0");
-        else
-            this.tile_element.setAttribute("background-color", "rgb(0, 0, 0");
     }
 
-    setIsFound(isFound, color)
+    setColor(color)
+    {
+        this.color = color;    
+    }
+
+    setWord_(word)
+    {
+        this.word = word;
+    }
+    
+    setIsFound(isFound)
     {
         this.isFound = isFound;
 
-        if(this.isFound)
+        /*if(this.isFound)
         {
-            //this.tile_element.setAttribute("class", "tile-found");
-
             this.tile_element.style.backgroundColor = color;
-        }
+        }*/
+
+        //this.color = color;
     }
 
     setNeighbors(index, tile)
@@ -128,7 +138,12 @@ class Tile{
         return this.isFound;
     }
 
-    getIndex_i()
+    getWord_()
+    {
+        return this.word;
+    }
+
+    /*getIndex_i()
     {
         return this.i_index;
     }
@@ -136,7 +151,7 @@ class Tile{
     getIndex_j()
     {
         return this.j_index;
-    }
+    }*/
 
     getLetter()
     {
@@ -145,6 +160,11 @@ class Tile{
 
     getTileElement(){
         return this.tile_element;
+    }
+
+    getColor()
+    {
+        return this.color;
     }
     
 }
@@ -164,6 +184,9 @@ class Puzzle{
     solutionMap;
     dimension_x; 
     dimension_y;
+    solution;
+    wordSolution;
+    id;
 
     constructor(file, words)
     {
@@ -179,6 +202,10 @@ class Puzzle{
         this.dimension_y = puzzle.length;
         
         this.setTileNeighbors();
+
+        this.solution = [];
+        
+        this.id = null;
     }
 
     setTileNeighbors()
@@ -255,7 +282,7 @@ class Puzzle{
 
     search(word, index, tile, wordIndex)
     {
-       tile.setIsSelected(true);    
+          
        
        if(wordIndex != word.length - 1)
         {
@@ -263,12 +290,13 @@ class Puzzle{
             {
                 return false;
             }
-            
-            console.log(typeof tile);
+            console.log(typeof words[1]);
+            this.solution.push(tile.getNeighbors()[index]);
+
+            //console.log(typeof tile);
             if (word.slice(wordIndex + 1, wordIndex  + 2) != tile.getNeighbors()[index].getLetter()
             )
             {
-                tile.setIsSelected(false);
                 return false;
             }
             else
@@ -282,10 +310,12 @@ class Puzzle{
 
     findWord(word)
     {
+        
         for(let i = 0; i < this.dimension_y; i++)
         {
             for(let j = 0; j < this.dimension_x; j++)
             {
+                this.solution.push(this.puzzle[i][j])
                 if(word.getFirstLetter() === this.puzzle[i][j].getLetter())
                 {
                     for (let index = 0; index < this.puzzle[i][j].getNeighbors().length; index++)
@@ -294,10 +324,12 @@ class Puzzle{
                         {
                             let tile = this.puzzle[i][j];
                             let color = colorBank[Math.floor(Math.random() * colorBank.length)];
-                            console.log(color);
+                            //console.log(color);
                             for (let currIndex = 0; currIndex < word.getWord().length; currIndex++)
                             {
-                                tile.setIsFound(true, color);
+                                //tile.setIsFound(true, color);
+                                tile.setWord_(word.getWord());
+                                tile.setColor(word.getColor());
                                 tile = tile.getNeighbors()[index];
                                 
                             }
@@ -315,17 +347,69 @@ class Puzzle{
         //basic algorithm
         for (let i = 0; i < this.words.length; i++)
         {
-            console.log(typeof words[i]);
-            console.log(words[i]);
             this.findWord(this.words[i]);
             this.words[i].setIsFound(true);
         }
 
         this.isCompleted = true;
+        this.animate();
     }
 
-   
-    
+    animate()
+    {
+        let index = 0;
+        let wordIndex = 0;
+        let counter = 0;
+       
+        this.id = setInterval(frame, 20, this.solution, this.words);
+
+         function frame(solution, words)
+        {
+            if (index >= solution.length)
+            {
+                clearInterval(this.id);
+            }
+
+            let tile = solution[index];
+            let word = words[wordIndex].getWord();
+            
+            console.log(index);
+            if (!tile.getIsSelected())
+            {
+                tile.setIsSelected(true);
+                tile.getTileElement().style.backgroundColor = "#faf275";
+            }
+            else
+            {
+                tile.setIsSelected(false);
+
+                console.log(tile.getWord_());
+
+                if (tile.getWord_() === word)
+                {
+                    tile.getTileElement().style.backgroundColor = tile.getColor();
+                    counter++;
+                    tile.setIsFound(true);
+                }
+                else if (!tile.getIsFound())
+                {
+                    tile.getTileElement().style.backgroundColor = "";
+                }
+                else 
+                {
+                    tile.getTileElement().style.backgroundColor = tile.getColor();
+                }
+                index++;
+            }
+
+            if (counter == word.length)
+            {
+                counter = 0;
+                wordIndex++;
+            }
+
+         }
+    }
 
 }
 
@@ -334,6 +418,7 @@ class Puzzle{
 // figure out how to add sorting animations
 //figure out how to use files instead
 //find solution to overlap issue (circle instead of highlight)
+//use greedy algo for color assignment
 
 const title = "JANUARY";
 
@@ -399,9 +484,9 @@ for (let i = 0; i < words.length; i++)
     
     let wordObj = new Word(words[i], word);
     words_list[i] = wordObj;
-    console.log(typeof words[i])
+    //console.log(typeof words[i])
 }
-console.log(typeof words_list[1])
+//console.log(typeof words_list[1])
 let puzz = new Puzzle(tiles_list, words_list);
 puzz.solve();
 console.log(Math.floor(Math.random() * 5));
