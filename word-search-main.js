@@ -10,6 +10,8 @@ class Word{
     firstLetter;
     word_element;
     color;
+    start_index;
+    end_index;
     
     constructor(word, word_element){
         this.word = word;
@@ -43,6 +45,16 @@ class Word{
     {
         return this.color;
     }
+
+    getStart()
+    {
+        return this.start_index;
+    }
+
+    getEnd()
+    {
+        return this.end_index;
+    }
     
     setIsFound(isFound)
     {
@@ -53,6 +65,16 @@ class Word{
             this.word_element.setAttribute("class", "found");
             
         }
+    }
+
+    setStart(start)
+    {
+        this.start_index = start;
+    }
+
+    setEnd(end)
+    {
+        this.end_index = end;
     }
 
 }
@@ -272,7 +294,7 @@ class Puzzle{
 
     getSolution()
     {
-        return this.solutionMap;
+        return this.solution;
     }
 
     getIsCompleted()
@@ -320,11 +342,15 @@ class Puzzle{
                 {
                     for (let index = 0; index < this.puzzle[i][j].getNeighbors().length; index++)
                     {
+                        let start = this.solution.length;
                         if (this.search(word.getWord(), index, this.puzzle[i][j], 0))
                         {
                             let tile = this.puzzle[i][j];
                             let color = colorBank[Math.floor(Math.random() * colorBank.length)];
                             //console.log(color);
+                            word.setStart(start - 2);
+                            //word.setEnd(word.getStart() + word.getWord().length - 1);
+                            word.setEnd(this.solution.length);
                             for (let currIndex = 0; currIndex < word.getWord().length; currIndex++)
                             {
                                 //tile.setIsFound(true, color);
@@ -348,7 +374,7 @@ class Puzzle{
         for (let i = 0; i < this.words.length; i++)
         {
             this.findWord(this.words[i]);
-            this.words[i].setIsFound(true);
+            //this.words[i].setIsFound(true);
         }
 
         this.isCompleted = true;
@@ -371,9 +397,9 @@ class Puzzle{
             }
 
             let tile = solution[index];
-            let word = words[wordIndex].getWord();
+            let word = words[wordIndex];
             
-            console.log(index);
+            
             if (!tile.getIsSelected())
             {
                 tile.setIsSelected(true);
@@ -383,13 +409,24 @@ class Puzzle{
             {
                 tile.setIsSelected(false);
 
-                console.log(tile.getWord_());
+                console.log(solution[index]);
+                let start = word.getStart();
+                let end = word.getEnd();
 
-                if (tile.getWord_() === word)
+                if (index >= start && index <= end)
                 {
-                    tile.getTileElement().style.backgroundColor = tile.getColor();
-                    counter++;
-                    tile.setIsFound(true);
+                    if (solution[index].getWord_() != word.getWord())
+                    {
+                        end++;
+                        tile.getTileElement().style.backgroundColor = "";
+                    }
+
+                    else
+                    {
+                        tile.getTileElement().style.backgroundColor = tile.getColor();
+                        counter++;
+                        tile.setIsFound(true);
+                    }
                 }
                 else if (!tile.getIsFound())
                 {
@@ -400,18 +437,21 @@ class Puzzle{
                     tile.getTileElement().style.backgroundColor = tile.getColor();
                 }
                 index++;
-            }
 
-            if (counter == word.length)
-            {
-                counter = 0;
-                wordIndex++;
+                if (index == word.getEnd())
+                {
+                    counter = 0;
+                    words[wordIndex].setIsFound(true);
+                    wordIndex++;
+                }
             }
-
-         }
+        }
     }
-
 }
+        
+
+
+
 
 //TODO: add round corners, change color scheme, use a drop shadow effect, create a color bank
 // have each word highlighted in a different color
