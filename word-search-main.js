@@ -144,12 +144,18 @@ class Tile{
 
     setColor(color)
     {
-        this.color = color;    
+        if (this.color === "")
+        {
+            this.color = color;
+        }  
     }
 
     setWord_(word)
     {
-        this.word = word;
+        if (this.word === "")
+        {
+            this.word = word;
+        }
     }
     
     //accessors
@@ -240,7 +246,7 @@ class Puzzle{
 
         //TODO: absolve conditions into variables
         //checks to see whether a tile has a particular neighbor based on its location for each neighbor index, 
-        //if it does, it stores the tile at that index
+        //if it does, it stores the neighbor tile at that index
         for (let i = 0; i < this.dimension_y; i++)
         {
             for (let j = 0; j < this.dimension_x; j++)
@@ -355,9 +361,9 @@ class Puzzle{
                             let tile = this.puzzle[i][j]; //temporary variable for simplicity, points to the tile containing the first letter of the word
                             let color = colorBank[Math.floor(Math.random() * colorBank.length)]; //assigning color
                             //console.log(color);
-                            word.setStart(start - 2); //seting start value to use in the animate function
+                            word.setStart(start - 8); //setting start value to use in the animate function
                             //word.setEnd(word.getStart() + word.getWord().length - 1);
-                            word.setEnd(this.solution.length); //seting end value to use in the animate function
+                            word.setEnd(this.solution.length); //setting end value to use in the animate function
                             for (let currIndex = 0; currIndex < word.getWord().length; currIndex++) //iterates through solution tiles to set some values for the animation
                             {
                                 //tile.setIsFound(true, color);
@@ -409,8 +415,8 @@ class Puzzle{
             
             if (!tile.getIsSelected()) //momentarily highlights tile on the first iteration (each tile is iterated through twice)
             {
-                tile.setIsSelected(true);
-                tile.getTileElement().style.backgroundColor = "#faf275";
+                tile.setIsSelected(true); //so that the below section of code will execute after the first iteration
+                tile.getTileElement().style.backgroundColor = "#faf275"; //highlighter hue
             }
             else //logic for second iteration of tile
             {
@@ -419,8 +425,13 @@ class Puzzle{
                 let start = word.getStart(); //accessing location of the start and end values of the word solution within the overall solution
                 let end = word.getEnd();
 
-                if (index >= start && index <= end) //if the solution index is within the start and end values, the function may be iterating over a solution tile
+                if (tile.getIsFound())
                 {
+                    tile.getTileElement().style.backgroundColor = tile.getColor();
+                }
+                else if (index >= start && index <= end) //if the solution index is within the start and end values, the function may be iterating over a solution tile
+                {
+                    
                     if (solution[index].getWord_() != word.getWord()) //if tile is not part of the solution, end variable is incremented, bg color is reset
                     {
                         end++;
@@ -438,17 +449,25 @@ class Puzzle{
                 {
                     tile.getTileElement().style.backgroundColor = ""; //resetting tile bg color if the tile is not a solution tile or if its corresponding word has yet to be iterated through
                 }
-                else 
+                /*else 
                 {
                     tile.getTileElement().style.backgroundColor = tile.getColor(); //resets to tile color if tile is part of a different word solution and has been found
-                }
+                }*/
                 index++; //iterates to next tile
 
                 if (index == word.getEnd()) //iterates to next word if necessary
                 {
+                    
+                    
                     counter = 0;
                     words[wordIndex].setIsFound(true);
                     wordIndex++;
+                    if(words[wordIndex].getWord() === "FOG")
+                    {
+                        console.log(index);
+                    }
+                    
+                    
                 }
             }
         }
@@ -465,6 +484,9 @@ class Puzzle{
 //figure out how to use files instead
 //find solution to overlap issue (circle instead of highlight)
 //use greedy algo for color assignment
+// !fog, shovel, are not showing up properly
+//TODO: use the console to compare the start values to for the shovel and fog objects
+//TODO: to the tiles at those indices 
 
 //hardocding of puzzle
 const title = "JANUARY";
@@ -538,8 +560,8 @@ puzz.solve(); //calls the solve function
 
 
 
-
-
+console.log(words_list[6]);
+console.log(puzz.getSolution()[836]);
 
 
             
